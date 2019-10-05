@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.8)
 project(mailru CXX)
 #especially for mail.ru archaic versions of CMake and Boost, name final, -pthread
 set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra -std=c++11 -pthread")
+#unavoidable if you want to cmake it on mailru virtual machine
+ENABLE_LANGUAGE(C)
 
 #an attempt of workaround, because mailru machine cannot find it's own pthread
 set(CMAKE_THREAD_LIBS_INIT "-lpthread")
