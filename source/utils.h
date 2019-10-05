@@ -1,9 +1,7 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
-#ifdef _GNU_SOURCE
-#undef _GNU_SOURCE
-#endif
+//#ifdef _GNU_SOURCE#undef _GNU_SOURCE#endif
 #include <cstring>
 #include <cstdlib>
 #include <csignal>
