@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(mailru, CXX)
+project(mailru CXX)
 set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra")
 
 find_package(Threads)
