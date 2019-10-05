@@ -1,5 +1,6 @@
 #include "multithreading.h"
 
+/*
 thread_local interrupt_flag interruptible_thread::this_thread_interrupt_flag;
 
 void interruption_point()
@@ -7,6 +8,7 @@ void interruption_point()
 	if (interruptible_thread::this_thread_interrupt_flag.is_set())
 		throw thread_interrupted{};
 }
+*/
 
 thread_local stealing_queue<thread_pool::moveable_task> *thread_pool::local_tasks_queue;
 

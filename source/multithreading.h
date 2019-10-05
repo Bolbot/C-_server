@@ -14,7 +14,7 @@
 
 #include <iostream>
 
-class interrupt_flag final
+/*class interrupt_flag final
 {
 private:
 	std::atomic<bool> flag{ false };
@@ -78,6 +78,7 @@ public:
 			interrupt_flag_ptr->set();
 	}
 };
+*/
 
 template <typename T>
 class mt_safe_queue final
