@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 
 project(mailru, CXX)
-#especially for mail.ru archaic versions of CMake and Boost, name final
-set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra -std=c++11")
+#especially for mail.ru archaic versions of CMake and Boost, name final, -lpthread
+set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra -std=c++11 -lpthread")
 
 find_package(Threads)
 find_package(Boost 1.54 REQUIRED COMPONENTS program_options)
