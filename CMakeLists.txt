@@ -7,11 +7,11 @@ set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra -std=c++11 -pthread")
 ENABLE_LANGUAGE(C)
 
 #an attempt of workaround, because mailru machine cannot find it's own pthread
-set(CMAKE_THREAD_LIBS_INIT "-lpthread")
-set(CMAKE_HAVE_THREADS_LIBRARY 1)
-set(CMAKE_USE_WIN32_THREADS_INIT 0)
-set(CMAKE_USE_PTHREADS_INIT 1)
-set(THREADS_PREFER_PTHREAD_FLAG ON)
+#set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+#set(CMAKE_HAVE_THREADS_LIBRARY 1)
+#set(CMAKE_USE_WIN32_THREADS_INIT 0)
+#set(CMAKE_USE_PTHREADS_INIT 1)
+#set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 find_package(Threads)
 find_package(Boost 1.54 REQUIRED COMPONENTS program_options)
