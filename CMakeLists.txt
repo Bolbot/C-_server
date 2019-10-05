@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project(mailru, CXX)
+project(mailru CXX)
 #especially for mail.ru archaic versions of CMake and Boost, name final, -lpthread
 set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra -std=c++11 -lpthread")
 
