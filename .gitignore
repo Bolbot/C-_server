@@ -1,5 +1,7 @@
 builds/
+build/
 CMakeFiles/
 CMakeCache.txt
 Makefile
 cmake_install.cmake
+the_server_*.log

@@ -367,11 +367,10 @@ public:
 	}
 
 	template <typename Function, typename Argument>
-	void enqueue_task(Function function, Argument &&argument)
+	void enqueue_task(Function &&function, Argument &&argument)
 	{
-		std::cout << typeid(function).name() << " accepting " << typeid(argument).name() << "\n";
-
 		moveable_task task{ std::bind(function, std::move(argument)) };
+
 		if (local_tasks_queue)
 			local_tasks_queue->push(std::move(task));
 		else
