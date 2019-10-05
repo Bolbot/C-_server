@@ -1,5 +1,6 @@
 #include "multithreading.h"
 
+// not used apart from respective parts in .h file
 /*
 thread_local interrupt_flag interruptible_thread::this_thread_interrupt_flag;
 

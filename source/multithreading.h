@@ -14,7 +14,9 @@
 
 #include <iostream>
 
-/*class interrupt_flag final
+// Maybe set interruption_points all over the client-processing routine and use interruptible_thread for the thread_pool
+/*
+class interrupt_flag final
 {
 private:
 	std::atomic<bool> flag{ false };
