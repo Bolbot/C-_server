@@ -248,7 +248,7 @@ class thread_joiner final
 private:
 	std::vector<std::thread> &threads;
 public:
-	explicit thread_joiner(std::vector<std::thread> &t): threads{ t }
+	explicit thread_joiner(std::vector<std::thread> &t): threads(t)
 	{}
 	~thread_joiner()
 	{
