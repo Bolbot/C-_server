@@ -1,15 +1,16 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 2.8)
 
 project(mailru, CXX)
-set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra")
+#especially for mail.ru archaic versions of CMake and Boost, name final
+set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra -std=c++11")
 
 find_package(Threads)
-find_package(Boost 1.65 REQUIRED COMPONENTS program_options)
+find_package(Boost 1.54 REQUIRED COMPONENTS program_options)
 add_library(utils source/utils.cpp)
 add_library(server source/server.cpp)
 add_library(multithreading source/multithreading.cpp)
-add_executable(main source/main.cpp)
+add_executable(final source/main.cpp)
 
 target_link_libraries(utils ${Boost_LIBRARIES})
 target_link_libraries(server multithreading)
-target_link_libraries(main utils server ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(final utils server ${CMAKE_THREAD_LIBS_INIT})
