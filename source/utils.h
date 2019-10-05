@@ -1,6 +1,7 @@
 #ifndef __UTILS_H__
 #define __UTILS_H__
 
+//undef _GNU_SOURCE and including cstring first of all for the strerror_r (otherwise c-style errors are ill-formed)
 //#ifdef _GNU_SOURCE#undef _GNU_SOURCE#endif
 #include <cstring>
 #include <cstdlib>
