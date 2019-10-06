@@ -18,7 +18,7 @@ struct addrinfo get_addrinfo_hints() noexcept
 
 int get_binded_socket(struct addrinfo *address_info) noexcept
 {
-	int socket_fd;
+	int socket_fd = -1;
 	bool bind_success = false;
 
 	for (auto it = address_info; it; it = it->ai_next)
@@ -26,6 +26,7 @@ int get_binded_socket(struct addrinfo *address_info) noexcept
 		socket_fd = socket(it->ai_family, it->ai_socktype, it->ai_protocol);
 		if (socket_fd == -1)
 		{
+	std::cout << "+1 socket() fail" << std::endl;
 			continue;
 		}
 
@@ -40,12 +41,15 @@ int get_binded_socket(struct addrinfo *address_info) noexcept
 		if (bind(socket_fd, it->ai_addr, it->ai_addrlen) == -1)
 		{
 			close(socket_fd);
+	std::cout << "+1 bind() fail" << std::endl;
 			continue;
 		}
 
 		bind_success = true;
 		break;
 	}
+
+	std::cout << "After all that kerfuffle with binding attempts around what getaddrinfo got us, the socket_fd is " << socket_fd << std::endl;
 
 	if (bind_success)
 		return socket_fd;
