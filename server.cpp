@@ -117,6 +117,7 @@ void run_server_loop(int master_socket)
 
 void process_the_accepted_connection(active_connection client)
 {
+	std::cout << "Processing the accepted connection from the descriptor " << client << std::endl;
 	constexpr size_t buffer_size = 8192;
 	char buffer[buffer_size] = { 0 };
 
@@ -131,6 +132,7 @@ void process_the_accepted_connection(active_connection client)
 		LOG_CERROR("Failed to recieve the request and process the client");
 		std::cerr << "Client " << client << " remains unprocessed\n";
 	}
+	std::cout << "Connection processed normaly" << std::endl;
 }
 
 void process_client_request(active_connection &client, http_request request)
@@ -139,7 +141,7 @@ void process_client_request(active_connection &client, http_request request)
 
 	std::string address = (server_directory + request.get_address()).data();
 
-	//std::cout << "Client requested file \"" << address << "\"\n";
+	std::cout << "Client requested file \"" << address << "\"" << std::endl;
 
 	if (request)
 	{
@@ -175,6 +177,7 @@ void process_client_request(active_connection &client, http_request request)
 			send_status_line(client, request.get_status());
 		}
 	}
+	std::cout << "Request processed normaly" << std::endl;
 }
 
 const char *http_response_phrase(short status) noexcept
