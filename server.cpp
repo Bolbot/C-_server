@@ -124,7 +124,7 @@ void process_the_accepted_connection(active_connection client)
 	std::cout << "\tcreated buffer..." << std::endl;
 	ssize_t recieved = recv(client, buffer, buffer_size, MSG_NOSIGNAL);
 
-	std::cotu << "\trecv returned " << recieved << std::endl;
+	std::cout << "\trecv returned " << recieved << std::endl;
 	if (recieved > 0)
 	{
 		std::cout << "\tcalling process_client_request(" << client << ", \"" << buffer << "\");" << std::endl;
@@ -142,7 +142,9 @@ void process_the_accepted_connection(active_connection client)
 
 void process_client_request(active_connection &client, http_request request)
 {
+	std::cout << "\t\tprocess_request starting to parse..." << std::endl;
 	request.parse_request();
+	std::cout << "\t\tparsed" << std::endl;
 
 	std::string address = (server_directory + request.get_address()).data();
 

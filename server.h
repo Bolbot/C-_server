@@ -164,6 +164,7 @@ public:
 	explicit http_request(const char *s) noexcept : source{ s }
 	{
 		set_delimiter();
+		std::cout << "created request" << std::endl;
 	}
 
 	http_request(const http_request &) = default;
@@ -231,6 +232,7 @@ public:
 				std::cout << "Found improper header in request: " << current << std::endl;
 			}
 		}
+		std::cout << "___end of parse_request function" << std::endl;
 	}
 	explicit operator bool() const noexcept
 	{
