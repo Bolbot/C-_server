@@ -161,13 +161,15 @@ private:
 		}
 	}
 public:
-	explicit http_request(const char *s) source{ s }
+	explicit http_request(const char *s) //: source{ s }
 	{
+		std::cout << "http_request constructor..." << std::endl;
+		source = std::string{ s };
 		set_delimiter();
 		std::cout << "created request" << std::endl;
 	}
 
-	http_request(const http_request &) = default;
+	http_request(const http_request &) = default;				// is this a problem? do some unit tests perhaps...
 	http_request &operator=(const http_request &) = default;
 
 	void parse_request()
