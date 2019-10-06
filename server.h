@@ -161,7 +161,7 @@ private:
 		}
 	}
 public:
-	http_request(const char *s) noexcept : source{ s }
+	explicit http_request(const char *s) noexcept : source{ s }
 	{
 		set_delimiter();
 	}

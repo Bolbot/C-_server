@@ -121,13 +121,18 @@ void process_the_accepted_connection(active_connection client)
 	constexpr size_t buffer_size = 8192;
 	char buffer[buffer_size] = { 0 };
 
+	std::cout << "\tcreated buffer..." << std::endl;
 	ssize_t recieved = recv(client, buffer, buffer_size, MSG_NOSIGNAL);
+
+	std::cotu << "\trecv returned " << recieved << std::endl;
 	if (recieved > 0)
 	{
+		std::cout << "\tcalling process_client_request(" << client << ", \"" << buffer << "\");" << std::endl;
 		process_client_request(client, buffer);
 	}
 	else if (recieved == -1)
 	{
+		std::cout << "\tgoing to report errors to err.log" << std::endl;
 		std::lock_guard<std::mutex> lock(cerr_mutex);
 		LOG_CERROR("Failed to recieve the request and process the client");
 		std::cerr << "Client " << client << " remains unprocessed\n";
