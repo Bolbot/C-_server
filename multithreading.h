@@ -14,74 +14,6 @@
 
 #include <iostream>
 
-// Maybe set interruption_points all over the client-processing routine and use interruptible_thread for the thread_pool
-/*
-class interrupt_flag final
-{
-private:
-	std::atomic<bool> flag{ false };
-
-public:
-	void set()
-	{
-		flag.store(true, std::memory_order_release);
-	}
-	bool is_set() const
-	{
-		return flag.load(std::memory_order_acquire);
-	}
-};
-
-class thread_interrupted : public std::exception
-{};
-
-void interruption_point();
-
-class interruptible_thread final
-{
-private:
-	std::thread thread;
-	static thread_local interrupt_flag this_thread_interrupt_flag;
-	interrupt_flag *interrupt_flag_ptr;
-	friend void interruption_point();
-public:
-	template <typename Function, typename ... Arguments>
-	interruptible_thread(Function function, Arguments ... arguments)
-	{
-		std::promise<interrupt_flag *> promise;
-		thread = std::thread([&promise, &function, &arguments...] ()
-		{
-			promise.set_value(&interruptible_thread::this_thread_interrupt_flag);
-			try
-			{
-				function(arguments...);
-			}
-			catch (const thread_interrupted &)
-			{}
-		});
-		interrupt_flag_ptr = promise.get_future().get();
-	}
-
-	bool joinable() const
-	{
-		return thread.joinable();
-	}
-	void join()
-	{
-		thread.join();
-	}
-	void detach()
-	{
-		thread.detach();
-	}
-	void interrupt()
-	{
-		if (interrupt_flag_ptr)
-			interrupt_flag_ptr->set();
-	}
-};
-*/
-
 template <typename T>
 class mt_safe_queue final
 {
@@ -249,7 +181,9 @@ private:
 	std::vector<std::thread> &threads;
 public:
 	explicit thread_joiner(std::vector<std::thread> &t): threads(t)
-	{}
+	{
+		std::cout << "thread joiner initialized." << std::endl;
+	}
 	~thread_joiner()
 	{
 		for (auto &i: threads)
@@ -348,6 +282,7 @@ public:
 	thread_pool() : terminate_flag{ false },  task_queues(std::thread::hardware_concurrency()),
 			threads(std::thread::hardware_concurrency()), joiner_of_pool_threads{ threads }
 	{
+		std::cout << "thread pool initialized with " << threads.size() << " threads" << std::endl;
 		try
 		{
 			for (auto &i: task_queues)
@@ -359,10 +294,12 @@ public:
 		catch (...)
 		{
 			terminate_flag.store(true, std::memory_order_release);
+			std::cout << "thread pool initialization failed" << std::endl;
 		}
 	}
 	~thread_pool()
 	{
+		std::cout << "thread pool destruction..." << std::endl;
 		terminate_flag.store(true, std::memory_order_release);
 	}
 
@@ -370,6 +307,8 @@ public:
 	void enqueue_task(Function &&function, Argument &&argument)
 	{
 		moveable_task task{ std::bind(function, std::move(argument)) };
+
+		std::cout << "\tcreated task and now enqueing it..." << std::endl;
 
 		if (local_tasks_queue)
 			local_tasks_queue->push(std::move(task));

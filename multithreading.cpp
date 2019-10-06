@@ -19,10 +19,12 @@ std::unique_ptr<thread_pool> worker_threads;
 
 void initialize_thread_pool()
 {
+	std::cout << "thread pool initialization" << std::endl;
 	worker_threads.reset(new thread_pool);
 }
 
 void terminate_thread_pool()
 {
+	std::cout << "thread pool termination" << std::endl;
 	worker_threads.reset(nullptr);
 }
