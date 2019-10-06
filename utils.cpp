@@ -291,22 +291,25 @@ void atexit_terminator() noexcept
 [[noreturn]] void terminate_handler() noexcept
 {
 	terminate_thread_pool();
-	std::clog << time_t_to_string(current_time_t()) << std::endl;
+	std::clog << "Terminating at " << time_t_to_string(current_time_t()) << std::endl;
 
 	std::exception_ptr current = std::current_exception();
 	if (current)
 	{
+		std::clog << "Current exception: ";
 		try
 		{
 			std::rethrow_exception(current);
 		}
 		catch (std::exception &e)
 		{
+			std::clog << e.what() << std::endl;
 			std::lock_guard<std::mutex> lock(cerr_mutex);
 			std::cerr << "Terminating because of unhandled exception: " << e.what() << "\n";
 		}
 		catch (...)
 		{
+			std::clog << " yet unknown to the modern science." << std::endl;
 			std::lock_guard<std::mutex> lock(cerr_mutex);
 			std::cerr << "Terminating because of unknown exception (not an std::exception)\n";
 		}
