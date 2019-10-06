@@ -161,7 +161,7 @@ private:
 		}
 	}
 public:
-	explicit http_request(const char *s) noexcept : source{ s }
+	explicit http_request(const char *s) source{ s }
 	{
 		set_delimiter();
 		std::cout << "created request" << std::endl;
@@ -172,6 +172,7 @@ public:
 
 	void parse_request()
 	{
+		std::cout << "parsing request____" << std::endl;
 		if (is_invalid_request())
 		{
 			return;
