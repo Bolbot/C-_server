@@ -278,7 +278,7 @@ private:
 				{
 					task();
 				}
-				catch (std::excetion &e)
+				catch (std::exception &e)
 				{
 					std::cout << std::this_thread::get_id() << " got an exception: " << e.what() << std::endl;
 				}
