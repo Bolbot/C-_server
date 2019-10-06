@@ -128,7 +128,7 @@ void process_the_accepted_connection(active_connection client)
 	if (recieved > 0)
 	{
 		std::cout << "\tcalling process_client_request(" << client << ", \"" << buffer << "\");" << std::endl;
-		process_client_request(client, buffer);
+		process_client_request(client, http_request(buffer));
 	}
 	else if (recieved == -1)
 	{
