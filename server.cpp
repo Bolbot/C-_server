@@ -144,7 +144,7 @@ void process_client_request(active_connection &client, http_request request)
 {
 	std::cout << "\t\tprocess_request starting to parse..." << std::endl;
 	request.parse_request();
-	std::cout << "\t\tparsed" << std::endl;
+	std::cout << "\t\tparsed!!!!!!" << std::endl;
 
 	std::string address = (server_directory + request.get_address()).data();
 

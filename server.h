@@ -175,8 +175,10 @@ public:
 	void parse_request()
 	{
 		std::cout << "parsing request____" << std::endl;
+		std::cout << "source is " << source << std::endl;
 		if (is_invalid_request())
 		{
+			std::cout << "invalid request\n";
 			return;
 		}
 
@@ -188,6 +190,8 @@ public:
 			status = 400;
 			return;
 		}
+
+		std::cout << "first line is \"" << first_line << "\"" << std::endl;
 
 		if (regex_match(first_line, full_request))
 		{
@@ -219,6 +223,9 @@ public:
 			status = 400;
 			return;
 		}
+
+		std::cout << "regex succeeded" << std::endl;
+		std::cerr << "regex succeeded" << std::endl;
 
 		status = 200;
 
