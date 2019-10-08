@@ -26,7 +26,6 @@ int get_binded_socket(struct addrinfo *address_info) noexcept
 		socket_fd = socket(it->ai_family, it->ai_socktype, it->ai_protocol);
 		if (socket_fd == -1)
 		{
-	std::cout << "+1 socket() fail" << std::endl;
 			continue;
 		}
 
@@ -41,15 +40,12 @@ int get_binded_socket(struct addrinfo *address_info) noexcept
 		if (bind(socket_fd, it->ai_addr, it->ai_addrlen) == -1)
 		{
 			close(socket_fd);
-	std::cout << "+1 bind() fail" << std::endl;
 			continue;
 		}
 
 		bind_success = true;
 		break;
 	}
-
-	std::cout << "After all that kerfuffle with binding attempts around what getaddrinfo got us, the socket_fd is " << socket_fd << std::endl;
 
 	if (bind_success)
 		return socket_fd;
@@ -117,21 +113,23 @@ void run_server_loop(int master_socket)
 
 void process_the_accepted_connection(active_connection client)
 {
-	std::cout << "Processing the accepted connection from the descriptor " << client << std::endl;
 	constexpr size_t buffer_size = 8192;
 	char buffer[buffer_size] = { 0 };
 
-	std::cout << "\tcreated buffer..." << std::endl;
 	ssize_t recieved = recv(client, buffer, buffer_size, MSG_NOSIGNAL);
 
-	std::cout << "\trecv returned " << recieved << std::endl;
 	if (recieved > 0)
 	{
 		std::cout << "\ttrying to call process_client_request(" << client << ", \"" << buffer << "\");" << std::endl;
 		try
 		{
 			http_request request(buffer);
+
+			std::cout << "created http_request..." << std::endl;
+
 			process_client_request(client, request);
+
+			std::cout << "called process_request and got back from there" << std::endl;
 		}
 		catch (std::exception &e)
 		{
@@ -149,7 +147,6 @@ void process_the_accepted_connection(active_connection client)
 		LOG_CERROR("Failed to recieve the request and process the client");
 		std::cerr << "Client " << client << " remains unprocessed\n";
 	}
-	std::cout << "Connection processed normaly" << std::endl;
 }
 
 void process_client_request(active_connection &client, http_request request)
