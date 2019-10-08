@@ -130,7 +130,8 @@ void process_the_accepted_connection(active_connection client)
 		std::cout << "\ttrying to call process_client_request(" << client << ", \"" << buffer << "\");" << std::endl;
 		try
 		{
-			process_client_request(client, http_request(buffer));
+			http_request request(buffer);
+			process_client_request(client, request);
 		}
 		catch (std::exception &e)
 		{
