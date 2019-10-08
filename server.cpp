@@ -122,7 +122,7 @@ void process_the_accepted_connection(active_connection client)
 	{
 		try
 		{
-			std::cout << "creating an http_request object..." << std::endl;
+			std::cout << "creating an http_request object from \'" << buffer << "\'" << std::endl;
 
 			http_request request(buffer);
 
