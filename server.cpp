@@ -134,7 +134,7 @@ void process_the_accepted_connection(active_connection client)
 		}
 		catch (std::regex_error &re)
 		{
-			std::cout << "got a regex_error: " << e.what() << " that is " << typeid(e.code()).name() << std::endl;
+			std::cout << "got a regex_error: " << re.what() << " that is " << typeid(re.code()).name() << std::endl;
 		}
 		catch (std::exception &e)
 		{
