@@ -114,9 +114,21 @@ private:
 	char delimiter;
 	bool http09;
 
-	const std::regex simple_request{ R"(^GET\s\S+$)" };
-	const std::regex full_request{ R"(^((GET)|(POST)|(HEAD))(\s\S+\s)(HTTP/\d\.\d)$)" };
-	const std::regex header{ R"(^[^()<>@,;:\"/\[\]?={} 	[:cntrl:]]+:[^[:cntrl:]]*$)" };
+	const std::regex simple_request
+	{
+	//	R"(^GET\s\S+$)"
+		"^$"
+	};
+	const std::regex full_request
+	{
+	//	R"(^((GET)|(POST)|(HEAD))(\s\S+\s)(HTTP/\d\.\d)$)"
+		"^$"
+	};
+	const std::regex header
+	{
+	//	R"(^[^()<>@,;:\"/\[\]?={} 	[:cntrl:]]+:[^[:cntrl:]]*$)"
+		"^$"
+	};
 
 	std::string readline(std::istringstream &stream) const
 	{
