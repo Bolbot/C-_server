@@ -271,18 +271,17 @@ private:
 
 			if ((local_tasks_queue && local_tasks_queue->try_pop(task)) || common_tasks_queue.try_pop(task) || try_steal(task))
 			{
-				std::cout << std::this_thread::get_id() << " got the task and will run it...\n";
 				try
 				{
 					task();
 				}
 				catch (std::exception &e)
 				{
-					std::cout << std::this_thread::get_id() << " got an exception: " << e.what() << std::endl;
+					std::cerr << std::this_thread::get_id() << " got an exception: " << e.what() << std::endl;
 				}
 				catch (...)
 				{
-					std::cout << std::this_thread::get_id() << " got unknown exception thrown" << std::endl;
+					std::cerr << std::this_thread::get_id() << " got unknown exception thrown" << std::endl;
 				}
 			}
 			else
@@ -305,7 +304,7 @@ public:
 		catch (...)
 		{
 			terminate_flag.store(true, std::memory_order_release);
-			std::cout << "thread pool initialization failed" << std::endl;
+			std::cerr << "thread pool initialization failed" << std::endl;
 		}
 	}
 	~thread_pool()

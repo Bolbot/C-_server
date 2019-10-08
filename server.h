@@ -170,12 +170,9 @@ private:
 		}
 	}
 public:
-	explicit http_request(const char *s) //: source{ s }
+	explicit http_request(const char *s) : source{ s }
 	{
-		std::cout << "http_request constructor..." << std::endl;
-		source = std::string{ s };
 		set_delimiter();
-		std::cout << "created request" << std::endl;
 	}
 
 	http_request(const http_request &) = default;				// is this a problem? do some unit tests perhaps...
@@ -183,11 +180,8 @@ public:
 
 	void parse_request()
 	{
-		std::cout << "parsing request____" << std::endl;
-		std::cout << "source is " << source << std::endl;
 		if (is_invalid_request())
 		{
-			std::cout << "invalid request\n";
 			return;
 		}
 
@@ -199,8 +193,6 @@ public:
 			status = 400;
 			return;
 		}
-
-		std::cout << "first line is \"" << first_line << "\"" << std::endl;
 
 		if (regex_match(first_line, full_request))
 		{
@@ -233,9 +225,6 @@ public:
 			return;
 		}
 
-		std::cout << "regex succeeded" << std::endl;
-		std::cerr << "regex succeeded" << std::endl;
-
 		status = 200;
 
 		set_address_from_first_line(first_line);
@@ -251,7 +240,6 @@ public:
 				std::cout << "Found improper header in request: " << current << std::endl;
 			}
 		}
-		std::cout << "___end of parse_request function" << std::endl;
 	}
 	explicit operator bool() const noexcept
 	{

@@ -120,66 +120,11 @@ void process_the_accepted_connection(active_connection client)
 
 	if (recieved > 0)
 	{
-		try
-		{
-			std::cout << "creating an http_request object from \'" << buffer << "\'" << std::endl;
-
-			http_request request(buffer);
-
-			std::cout << "created http_request..." << std::endl;
-
-			process_client_request(client, request);
-
-			std::cout << "called process_request and got back from there" << std::endl;
-		}
-		catch (std::regex_error &re)
-		{
-			std::cout << "got a regex_error: " << re.what() << " that is " << typeid(re.code()).name() << std::endl;
-
-			std::regex_constants::error_type error_type = re.code();
-
-			switch (error_type)
-			{
-			case std::regex_constants::error_collate: std::cout << " 	the expression contains an invalid collating element name " << std::endl; break;
-			case std::regex_constants::error_ctype : std::cout << " 	the expression contains an invalid character class name" << std::endl; break;
-
-			case std::regex_constants::error_escape : std::cout << " 	the expression contains an invalid escaped character or a trailing escape" << std::endl; break;
-
-			case std::regex_constants::error_backref : std::cout << " 	the expression contains an invalid back reference" << std::endl; break;
-
-			case std::regex_constants::error_brack : std::cout << " 	the expression contains mismatched square brackets ('[' and ']')" << std::endl; break;
-
-			case std::regex_constants::error_paren : std::cout << " 	the expression contains mismatched parentheses ('(' and ')')" << std::endl; break;
-
-			case std::regex_constants::error_brace : std::cout << " 	the expression contains mismatched curly braces ('{' and '}')" << std::endl; break;
-
-			case std::regex_constants::error_badbrace : std::cout << " 	the expression contains an invalid range in a {} expression" << std::endl; break;
-
-			case std::regex_constants::error_range : std::cout << " 	the expression contains an invalid character range (e.g. [b-a])" << std::endl; break;
-
-			case std::regex_constants::error_space : std::cout << " 	there was not enough memory to convert the expression into a finite state machine" << std::endl; break;
-
-			case std::regex_constants::error_badrepeat : std::cout << " 	one of *?+{ was not preceded by a valid regular expression" << std::endl; break;
-
-			case std::regex_constants::error_complexity : std::cout << " 	the complexity of an attempted match exceeded a predefined level" << std::endl; break;
-
-			case std::regex_constants::error_stack : std::cout << " 	there was not enough memory to perform a match " << std::endl; break;
-
-			default: std::cout << "UNKNOWN regex_error" << std::endl;
-			}
-		}
-		catch (std::exception &e)
-		{
-			std::cout << "got an exception: " << e.what() << std::endl;
-		}
-		catch (...)
-		{
-			std::cout << "caught an unknown exception" << std::endl;
-		}
+		http_request request(buffer);
+		process_client_request(client, request);
 	}
 	else if (recieved == -1)
 	{
-		std::cout << "\tgoing to report errors to err.log" << std::endl;
 		std::lock_guard<std::mutex> lock(cerr_mutex);
 		LOG_CERROR("Failed to recieve the request and process the client");
 		std::cerr << "Client " << client << " remains unprocessed\n";
@@ -188,13 +133,9 @@ void process_the_accepted_connection(active_connection client)
 
 void process_client_request(active_connection &client, http_request request)
 {
-	std::cout << "\t\tprocess_request starting to parse..." << std::endl;
 	request.parse_request();
-	std::cout << "\t\tparsed!!!!!!" << std::endl;
 
 	std::string address = (server_directory + request.get_address()).data();
-
-	std::cout << "Client requested file \"" << address << "\"" << std::endl;
 
 	if (request)
 	{
@@ -230,7 +171,6 @@ void process_client_request(active_connection &client, http_request request)
 			send_status_line(client, request.get_status());
 		}
 	}
-	std::cout << "Request processed normaly" << std::endl;
 }
 
 const char *http_response_phrase(short status) noexcept
