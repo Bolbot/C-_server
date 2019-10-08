@@ -127,8 +127,19 @@ void process_the_accepted_connection(active_connection client)
 	std::cout << "\trecv returned " << recieved << std::endl;
 	if (recieved > 0)
 	{
-		std::cout << "\tcalling process_client_request(" << client << ", \"" << buffer << "\");" << std::endl;
-		process_client_request(client, http_request(buffer));
+		std::cout << "\ttrying to call process_client_request(" << client << ", \"" << buffer << "\");" << std::endl;
+		try
+		{
+			process_client_request(client, http_request(buffer));
+		}
+		catch (std::exception &e)
+		{
+			std::cout << "got an exception: " << e.what() << std::endl;
+		}
+		catch (...)
+		{
+			std::cout << "caught an unknown exception" << std::endl;
+		}
 	}
 	else if (recieved == -1)
 	{
