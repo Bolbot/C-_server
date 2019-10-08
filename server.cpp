@@ -120,9 +120,10 @@ void process_the_accepted_connection(active_connection client)
 
 	if (recieved > 0)
 	{
-		std::cout << "\ttrying to call process_client_request(" << client << ", \"" << buffer << "\");" << std::endl;
 		try
 		{
+			std::cout << "creating an http_request object..." << std::endl;
+
 			http_request request(buffer);
 
 			std::cout << "created http_request..." << std::endl;
@@ -130,6 +131,10 @@ void process_the_accepted_connection(active_connection client)
 			process_client_request(client, request);
 
 			std::cout << "called process_request and got back from there" << std::endl;
+		}
+		catch (std::regex_error &re)
+		{
+			std::cout << "got a regex_error: " << e.what() << " that is " << typeid(e.code()).name() << std::endl;
 		}
 		catch (std::exception &e)
 		{

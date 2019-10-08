@@ -181,9 +181,7 @@ private:
 	std::vector<std::thread> &threads;
 public:
 	explicit thread_joiner(std::vector<std::thread> &t): threads(t)
-	{
-		std::cout << "thread joiner initialized." << std::endl;
-	}
+	{}
 	~thread_joiner()
 	{
 		for (auto &i: threads)
@@ -296,7 +294,6 @@ public:
 	thread_pool() : terminate_flag{ false },  task_queues(std::thread::hardware_concurrency()),
 			threads(std::thread::hardware_concurrency()), joiner_of_pool_threads{ threads }
 	{
-		std::cout << "thread pool initialized with " << threads.size() << " threads" << std::endl;
 		try
 		{
 			for (auto &i: task_queues)
@@ -313,7 +310,6 @@ public:
 	}
 	~thread_pool()
 	{
-		std::cout << "thread pool destruction..." << std::endl;
 		terminate_flag.store(true, std::memory_order_release);
 	}
 
@@ -321,8 +317,6 @@ public:
 	void enqueue_task(Function &&function, Argument &&argument)
 	{
 		moveable_task task{ std::bind(function, std::move(argument)) };
-
-		std::cout << "\tcreated task and now enqueing it..." << std::endl;
 
 		if (local_tasks_queue)
 			local_tasks_queue->push(std::move(task));
