@@ -135,6 +135,38 @@ void process_the_accepted_connection(active_connection client)
 		catch (std::regex_error &re)
 		{
 			std::cout << "got a regex_error: " << re.what() << " that is " << typeid(re.code()).name() << std::endl;
+
+			std::regex_constants::error_type error_type = re.code();
+
+			switch (error_type)
+			{
+			case std::regex_constants::error_collate: std::cout << " 	the expression contains an invalid collating element name " << std::endl; break;
+			case std::regex_constants::error_ctype : std::cout << " 	the expression contains an invalid character class name" << std::endl; break;
+
+			case std::regex_constants::error_escape : std::cout << " 	the expression contains an invalid escaped character or a trailing escape" << std::endl; break;
+
+			case std::regex_constants::error_backref : std::cout << " 	the expression contains an invalid back reference" << std::endl; break;
+
+			case std::regex_constants::error_brack : std::cout << " 	the expression contains mismatched square brackets ('[' and ']')" << std::endl; break;
+
+			case std::regex_constants::error_paren : std::cout << " 	the expression contains mismatched parentheses ('(' and ')')" << std::endl; break;
+
+			case std::regex_constants::error_brace : std::cout << " 	the expression contains mismatched curly braces ('{' and '}')" << std::endl; break;
+
+			case std::regex_constants::error_badbrace : std::cout << " 	the expression contains an invalid range in a {} expression" << std::endl; break;
+
+			case std::regex_constants::error_range : std::cout << " 	the expression contains an invalid character range (e.g. [b-a])" << std::endl; break;
+
+			case std::regex_constants::error_space : std::cout << " 	there was not enough memory to convert the expression into a finite state machine" << std::endl; break;
+
+			case std::regex_constants::error_badrepeat : std::cout << " 	one of *?+{ was not preceded by a valid regular expression" << std::endl; break;
+
+			case std::regex_constants::error_complexity : std::cout << " 	the complexity of an attempted match exceeded a predefined level" << std::endl; break;
+
+			case std::regex_constants::error_stack : std::cout << " 	there was not enough memory to perform a match " << std::endl; break;
+
+			default: std::cout << "UNKNOWN regex_error" << std::endl;
+			}
 		}
 		catch (std::exception &e)
 		{
