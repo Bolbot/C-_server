@@ -116,8 +116,8 @@ private:
 
 	const std::regex simple_request
 	{
-	//	R"(^GET\s\S+$)"
-		"^$"
+		R"(^GET\s\S+$)"
+	//	"^$"
 	};
 	const std::regex full_request
 	{
