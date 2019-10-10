@@ -111,11 +111,9 @@ private:
 
 	static void checked_pclose(FILE *closable) noexcept
 	{
-		int pclose_res = pclose(closable);
-		if (pclose_res)
+		if (pclose(closeable) == -1)
 		{
 			{
-				assert(pclose_res == -1);
 				std::lock_guard<std::mutex> lock(cerr_mutex);
 				LOG_CERROR("failed to pclose the popened file");
 			}
