@@ -117,6 +117,7 @@ private:
 			{
 				std::lock_guard<std::mutex> lock(cerr_mutex);
 	//			LOG_CERROR("failed to pclose the popened file");
+	std::cerr << "that is pclose error, will now try to report it...\n";
 	log_errno(__func__, __FILE__, __LINE__, "failed to pclose the popened file", pclose_res);
 			}
 			int descriptor = fileno(closable);
@@ -194,8 +195,7 @@ private:
 			std::string command = "file ";
 			command += path;
 			command += " --brief --mime";
-			popen_reader mime(command.data());
-			mime_type = mime();
+			mime_type = popen_reader(command.data())();
 			if (mime_type.back() == '\n')
 			{
 				mime_type.pop_back();

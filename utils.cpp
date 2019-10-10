@@ -148,12 +148,12 @@ void daemonize() noexcept
 void log_errno(const char *function, const char *file, size_t line, const char *message, int actual_errno) noexcept
 {
 	// cerr_mutex is locked before call to this function
-	std::cerr << "Error in " << function << " (" << file << ", line " << line << ")";
+	std::cerr << "Error in " << function << " (" << file << ", line " << line << ")\n";
 
 	constexpr size_t buffer_size = 1024;
 	static thread_local char buffer[buffer_size] = { 0 };
 
-	std::cout << "errno " << actual_errno << " means ";
+	std::cerr << "errno " << actual_errno << " means ";
 
 #if (!defined(_GNU_SOURCE) && defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L)
 
@@ -167,6 +167,8 @@ void log_errno(const char *function, const char *file, size_t line, const char *
 		std::cerr << buffer << "\n";
 	}
 
+	std::cout << "using XSI strerror_r, return type is " << typeid(decltype(strerror_r(actual_errno, buffer, buffer_size))).name() << std::endl;
+
 #elif defined(_GNU_SOURCE)
 
 	const char *strerror_res = strerror_r(actual_errno, buffer, buffer_size);
@@ -178,6 +180,8 @@ void log_errno(const char *function, const char *file, size_t line, const char *
 	{
 		std::cerr << "(failed to decipher)\n";
 	}
+
+	std::cout << "using GNU strerror_r, return type is " << typeid(decltype(strerror_r(actual_errno, buffer, buffer_size))).name() << std::endl;
 
 #else
 
