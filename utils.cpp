@@ -153,18 +153,18 @@ void log_errno(const char *function, const char *file, size_t line, const char *
 	constexpr size_t buffer_size = 1024;
 	static thread_local char buffer[buffer_size] = { 0 };
 
+	std::cout << "errno " << actual_errno << " means ";
+
 #if (!defined(_GNU_SOURCE) && defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L)
 
 	int strerror_res = strerror_r(actual_errno, buffer, buffer_size);
 	if (strerror_res != 0)
 	{
-		std::cerr << " - failed to decipher errno " << actual_errno;
-			<< " because of error with errno " << (strerror_res == -1 ? errno : strerror_res)
-			<< std::endl;
+		std::cerr << "(failed to decipher because of error with errno " << (strerror_res == -1 ? errno : strerror_res)  << ")\n";
 	}
 	else
 	{
-		std::cerr << " - " << buffer << "\n";
+		std::cerr << buffer << "\n";
 	}
 
 #elif defined(_GNU_SOURCE)
@@ -172,16 +172,16 @@ void log_errno(const char *function, const char *file, size_t line, const char *
 	const char *strerror_res = strerror_r(actual_errno, buffer, buffer_size);
 	if (strerror_res)
 	{
-		std::cerr << " - " << strerror_res << "\n";
+		std::cerr << strerror_res << "\n";
 	}
 	else
 	{
-		std::cerr << " - failed to decipher errno " << actual_errno << "\n";
+		std::cerr << "(failed to decipher)\n";
 	}
 
 #else
 
-	std::cerr << " - alas impossible to report errno-provided errors.\n";
+	std::cerr << "(alas impossible to report errno-provided errors)\n";
 
 #endif	
 
