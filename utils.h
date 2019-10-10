@@ -111,7 +111,7 @@ private:
 
 	static void checked_pclose(FILE *closable) noexcept
 	{
-		if (pclose(closeable) == -1)
+		if (pclose(closable) == -1)
 		{
 			{
 				std::lock_guard<std::mutex> lock(cerr_mutex);
