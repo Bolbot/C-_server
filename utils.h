@@ -24,6 +24,7 @@
 #include "multithreading.h"
 
 #define LOG_CERROR(x) log_errno((__func__), (__FILE__), (__LINE__), (x))
+//#define LOG_CERROR(x, y) log_errno((__func__), (__FILE__), (__LINE__), (x), (y))
 
 extern std::mutex cerr_mutex;
 
@@ -98,7 +99,7 @@ void set_signal(int signal_number) noexcept;
 
 void set_signals() noexcept;
 
-void log_errno(const char *function, const char *file, size_t line, const char *message) noexcept;
+void log_errno(const char *function, const char *file, size_t line, const char *message, int actual_errno = errno) noexcept;
 
 size_t set_maximal_avaliable_limit_of_fd() noexcept;
 
@@ -110,11 +111,13 @@ private:
 
 	static void checked_pclose(FILE *closable) noexcept
 	{
-		if (pclose(closable))
+		int pclose_res = pclose(closable);
+		if (pclose_res)
 		{
 			{
 				std::lock_guard<std::mutex> lock(cerr_mutex);
-				LOG_CERROR("failed to pclose the popened file");
+	//			LOG_CERROR("failed to pclose the popened file");
+	log_errno(__func__, __FILE__, __LINE__, "failed to pclose the popened file", pclose_res);
 			}
 			int descriptor = fileno(closable);
 			if (descriptor != -1)

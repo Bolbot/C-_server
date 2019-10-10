@@ -145,15 +145,13 @@ void daemonize() noexcept
 		<< "\nServer directory " << server_directory << std::endl;
 }
 
-void log_errno(const char *function, const char *file, size_t line, const char *message) noexcept
+void log_errno(const char *function, const char *file, size_t line, const char *message, int actual_errno) noexcept
 {
 	// cerr_mutex is locked before call to this function
 	std::cerr << "Error in " << function << " (" << file << ", line " << line << ")";
 
 	constexpr size_t buffer_size = 1024;
 	static thread_local char buffer[buffer_size] = { 0 };
-
-	int actual_errno = errno;
 
 #if (!defined(_GNU_SOURCE) && defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L)
 
