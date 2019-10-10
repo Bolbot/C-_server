@@ -128,7 +128,7 @@ private:
 	
 public:
 	popen_reader(const char *command) noexcept
-		: source{ std::move(FILE_pointer(popen(command, "r"), &checked_pclose)) }
+		: source{ std::move(FILE_pointer(popen(command, "e"), &checked_pclose)) }
 	{
 		if (!source)
 		{
