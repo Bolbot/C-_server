@@ -11,4 +11,7 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 70 --slave /u
 sudo apt-get install libboost-all-dev --yes
 sudo apt-get install telnet --yes
 sudo apt-get install htop --yes
+sudo apt-get install zsh --yes
 sudo apt-get update
+
+zsh

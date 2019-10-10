@@ -115,11 +115,9 @@ private:
 		if (pclose_res)
 		{
 			{
+				assert(pclose_res == -1);
 				std::lock_guard<std::mutex> lock(cerr_mutex);
-	//			LOG_CERROR("failed to pclose the popened file");
-	std::cerr << "that is pclose error, will now try to report it...\n";
-	perror("that is thread-unsafe perror of pclose of popen_reader");
-	log_errno(__func__, __FILE__, __LINE__, "failed to pclose the popened file", pclose_res);
+				LOG_CERROR("failed to pclose the popened file");
 			}
 			int descriptor = fileno(closable);
 			if (descriptor != -1)
