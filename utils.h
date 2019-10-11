@@ -103,59 +103,9 @@ void log_errno(const char *function, const char *file, size_t line, const char *
 
 size_t set_maximal_avaliable_limit_of_fd() noexcept;
 
-class popen_reader final
-{
-private:
-	using FILE_pointer = std::unique_ptr<FILE, void (*)(FILE *)>;
-	FILE_pointer source;
+void checked_pclose(FILE *closeable) noexcept;
 
-	static void checked_pclose(FILE *closable) noexcept
-	{
-		if (pclose(closable) == -1)
-		{
-			{
-				std::lock_guard<std::mutex> lock(cerr_mutex);
-				LOG_CERROR("failed to pclose the popened file");
-			}
-			int descriptor = fileno(closable);
-			if (descriptor != -1)
-			{
-				std::lock_guard<std::mutex> lock(cerr_mutex);
-				std::cerr << "File with descriptor " << descriptor << " wasn't pclosed in proper way.\n";
-			}
-		}
-	}
-	
-public:
-	popen_reader(const char *command) noexcept
-		: source{ std::move(FILE_pointer(popen(command, "e"), &checked_pclose)) }
-	{
-		if (!source)
-		{
-			std::lock_guard<std::mutex> lock(cerr_mutex);
-			LOG_CERROR("failed to popen the file");
-		}
-	}
-
-	popen_reader(const popen_reader &) = delete;
-	popen_reader &operator=(const popen_reader &) = delete;
-
-	std::string operator()()
-	{
-		constexpr size_t buffer_size = 1024;
-		char buffer[buffer_size];
-
-		rewind(source.get());
-		if (!fgets(buffer, buffer_size, source.get()))
-		{
-			std::lock_guard<std::mutex> lock(cerr_mutex);
-			LOG_CERROR("fgets failed so popen_reader returns \"\" (empty result)");
-			return "";
-		}
-
-		return buffer;
-	}
-};
+std::string popen_reader(const char *command);
 
 std::string time_t_to_string(time_t seconds_since_epoch);
 
@@ -192,7 +142,7 @@ private:
 			std::string command = "file ";
 			command += path;
 			command += " --brief --mime";
-			mime_type = popen_reader(command.data())();
+			mime_type = popen_reader(command.data());
 			if (mime_type.back() == '\n')
 			{
 				mime_type.pop_back();
