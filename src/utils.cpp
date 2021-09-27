@@ -8,40 +8,6 @@ std::string server_directory;
 
 void parse_program_options(int argc, char **argv) noexcept
 {
-	/*
-	static constexpr size_t needed_arguments = 7;
-
-	if (argc != needed_arguments)
-	{
-		std::cout << "Usage: " << argv[0] << " -h <ip> -p <port> -d <directory>\n";
-		exit(EXIT_SUCCESS);
-	}
-	else
-	{
-		const char avaliable_options[] = "h:p:d:";
-		int current;
-		while ((current = getopt(argc, argv, avaliable_options)) != -1)
-		{
-			if (current == 'h')
-			{
-				server_ip = optarg;
-			}
-			else if (current == 'p')
-			{
-				server_port = optarg;
-			}
-			else
-			{
-				server_directory = optarg;
-				if (server_directory.back() != '/')
-				{
-					server_directory.push_back('/');
-				}
-			}
-		}
-	}
-	*/
-
 	try
 	{
 		boost::program_options::options_description options("Call with following obligatory arguments");

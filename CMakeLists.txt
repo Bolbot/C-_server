@@ -1,19 +1,14 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.13)
 
-project(mailru CXX)
-#especially for mail.ru archaic versions of CMake and Boost, name final, -pthread
-set(CMAKE_CXX_FLAGS "-Wall -Werror -Wextra -std=c++11 -pthread")
-#unavoidable if you want to cmake it on mailru virtual machine
-ENABLE_LANGUAGE(C)
+project(CPP_server LANGUAGES C;CXX VERSION 0.1)
 
-find_package(Threads)
-find_package(Boost 1.54 REQUIRED COMPONENTS program_options)
-add_library(utils utils.cpp)
-add_library(server server.cpp)
-add_library(multithreading multithreading.cpp)
-add_executable(final main.cpp)
+# interface for flags etc.
+add_library(compiler_flags INTERFACE)
+target_compile_features(compiler_flags INTERFACE cxx_std_11)
+set(gcc_compiler_cpp "$<COMPILE_LANG_AND_ID:CXX,AppleClang,ARMClang,Clang,GNU>")
+target_compile_options(compiler_flags INTERFACE $<${gcc_compiler_cpp}:-Wall;-Wextra;-Werror;-Wpedantic>)
 
-target_link_libraries(utils ${Boost_LIBRARIES})
-target_link_libraries(multithreading ${CMAKE_THREAD_LIBS_INIT})
-target_link_libraries(server multithreading)
-target_link_libraries(final utils server)
+add_subdirectory(src)		# server, utils, multithreading
+add_subdirectory(apps)		# main
+
+target_link_libraries(main PRIVATE utils server)

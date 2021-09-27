@@ -200,7 +200,7 @@ const char *http_response_phrase(short status) noexcept
 	}
 
 	return result;
-};
+}
 
 ssize_t send_status_line(active_connection &client, short status)
 {

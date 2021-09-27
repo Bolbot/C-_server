@@ -1,5 +1,5 @@
-#include "utils.h"
-#include "server.h"
+#include "utils.h"		/* parse_program_options() and daemonize()*/
+#include "server.h"		/* get_listening_socket() and run_server_loop() */
 
 int main(int argc, char **argv)
 {
@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 
 	parse_program_options(argc, argv);
 
-	daemonize();
+//	daemonize();
 
 	int master_socket = get_listening_socket();
 

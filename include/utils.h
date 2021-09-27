@@ -24,7 +24,7 @@
 #include "multithreading.h"
 
 #define LOG_CERROR(x) log_errno((__func__), (__FILE__), (__LINE__), (x))
-//#define LOG_CERROR(x, y) log_errno((__func__), (__FILE__), (__LINE__), (x), (y))
+//#define LOG_CERROR(x, y) log_errno((__func__), (__FILE__), (__LINE__), (x), (y))	// was commented out initially
 
 extern std::mutex cerr_mutex;
 
