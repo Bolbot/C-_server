@@ -48,9 +48,13 @@ int get_binded_socket(struct addrinfo *address_info) noexcept
 	}
 
 	if (bind_success)
+	{
 		return socket_fd;
+	}
 	else
+	{
 		return -1;
+	}
 }
 
 int get_listening_socket() noexcept
@@ -94,7 +98,7 @@ void run_server_loop(int master_socket)
 	size_t limit_of_file_descriptors = set_maximal_avaliable_limit_of_fd();
 	std::clog << "Processing at most " << limit_of_file_descriptors << " fd at a time." << std::endl;
 
-//	initialize_thread_pool();
+//	initialize_thread_pool();		// why aren't we using the thread pool?!
 
 	while (true)
 	{
@@ -106,11 +110,15 @@ void run_server_loop(int master_socket)
 		}
 
 	//	worker_threads->enqueue_task(process_the_accepted_connection, std::move(client));
+
 		std::thread detached{ process_the_accepted_connection, std::move(client) };
 		if (detached.joinable())
+		{
 			detached.detach();
+		}
 	}
 
+	// how is this reachable? either introduce try-catch or revise while condition
 //	terminate_thread_pool();
 }
 
@@ -143,6 +151,7 @@ void process_client_request(active_connection &client, http_request request)
 	if (request)
 	{
 		open_file file(address.data());
+
 		if (file)
 		{
 			if (request.status_required())
@@ -190,6 +199,7 @@ const char *http_response_phrase(short status) noexcept
 	};
 
 	const char *result;
+
 	try
 	{
 		result = responses.at(status);
@@ -217,6 +227,7 @@ ssize_t send_status_line(active_connection &client, short status)
 
 ssize_t send_headers(active_connection &client, open_file &file)
 {
+	// too many += CRLF, let's revise that
 	std::string general_header;
 
 	general_header += "Date: ";
@@ -263,8 +274,11 @@ void send_client_a_file(active_connection &client, open_file &file) noexcept
 	for (size_t i = 0; i < max_attempts; ++i)
 	{
 		ssize_t file_sent = sendfile(client, file, nullptr, file.size());
+
 		if (file_sent ==  -1 || file.size() == static_cast<size_t>(file_sent))
+		{
 			break;
+		}
 	}
 }
 

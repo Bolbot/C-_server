@@ -1,5 +1,5 @@
-#ifndef __MULTITHREADING_H__
-#define __MULTITHREADING_H__
+#ifndef MULTITHREADING_H
+#define MULTITHREADING_H
 
 #include <atomic>
 #include <exception>
@@ -21,8 +21,10 @@ private:
 	std::queue<std::shared_ptr<T>> queue;
 	mutable std::mutex mutex;
 	std::condition_variable condv;
+
 public:
 	mt_safe_queue() = default;
+
 	mt_safe_queue(const mt_safe_queue &) = delete;
 	mt_safe_queue &operator=(const mt_safe_queue &) = delete;
 
@@ -39,7 +41,9 @@ public:
 		std::lock_guard<std::mutex> lock(mutex);
 
 		if (queue.empty())
+		{
 			return false;
+		}
 
 		dest = std::move(*queue.front());
 		queue.pop();
@@ -51,18 +55,24 @@ public:
 		std::lock_guard<std::mutex> lock(mutex);
 
 		if (queue.empty())
+		{
 			return nullptr;
+		}
 
 		std::shared_ptr<T> pointer = std::move(queue.front());
 		queue.pop();
+
 		return pointer;
 	}
 
 	void wait_and_pop(T &dest)
 	{
 		std::unique_lock<T> lock(mutex);
+
 		if (queue.empty())
+		{
 			condv.wait(lock, [this]() { return !queue.empty(); });
+		}
 
 		dest = std::move(*queue.front());
 		queue.pop();
@@ -71,17 +81,22 @@ public:
 	std::shared_ptr<T> wait_and_pop()
 	{
 		std::unique_lock<T> lock(mutex);
+
 		if (queue.empty())
+		{
 			condv.wait(lock, [this]() { return !queue.empty(); });
+		}
 
 		std::shared_ptr<T> pointer = std::move(queue.front());
 		queue.pop();
+
 		return pointer;
 	}
 
 	bool empty() const
 	{
 		std::lock_guard<std::mutex> lock(mutex);
+
 		return queue.empty();
 	}
 };
@@ -93,8 +108,10 @@ private:
 	std::deque<std::shared_ptr<T>> deque;
 	mutable std::mutex mutex;
 	std::condition_variable condv;
+
 public:
 	stealing_queue() = default;
+
 	stealing_queue(const stealing_queue &) = delete;
 	stealing_queue &operator=(const stealing_queue &) = delete;
 
@@ -103,6 +120,7 @@ public:
 		std::shared_ptr<T> ptr = std::make_shared<T>(std::move(element));
 
 		std::lock_guard<std::mutex> lock(mutex);
+
 		deque.push_front(std::move(ptr));
 		condv.notify_one();
 	}
@@ -110,67 +128,95 @@ public:
 	bool try_pop(T &dest)
 	{
 		std::lock_guard<std::mutex> lock(mutex);
+
 		if (deque.empty())
+		{
 			return false;
+		}
 
 		dest = std::move(*deque.front());
 		deque.pop_front();
+
 		return true;
 	}
+
 	std::shared_ptr<T> try_pop()
 	{
 		std::lock_guard<std::mutex> lock(mutex);
+
 		if (deque.empty())
+		{
 			return nullptr;
+		}
 
 		std::shared_ptr<T> ptr{ std::move(deque.front()) };
 		deque.pop_front();
+
 		return ptr;
 	}
+
 	void wait_and_pop(T &dest)
 	{
 		std::unique_lock<std::mutex> lock(mutex);
+
 		if (deque.empty())
+		{
 			condv.wait(lock, [this]() { return !deque.empty(); });
+		}
 
 		dest = std::move(*deque.front());
 		deque.pop_front();
 	}
+
 	std::shared_ptr<T> wait_and_pop()
 	{
 		std::unique_lock<std::mutex> lock(mutex);
+
 		if (deque.empty())
+		{
 			condv.wait(lock, [this]() { return !deque.empty(); });
+		}
 
 		std::shared_ptr<T> ptr = std::move(*deque.front());
 		deque.pop_front();
+
 		return ptr;
 	}
 
 	bool try_steal(T &dest)
 	{
 		std::lock_guard<std::mutex> lock(mutex);
+
 		if (deque.empty())
+		{
 			return false;
+		}
 
 		dest = std::move(*deque.back());
 		deque.pop_back();
+
 		return true;
 	}
+
 	std::shared_ptr<T> try_steal()
 	{
 		std::lock_guard<std::mutex> lock(mutex);
+
 		if (deque.empty())
+		{
 			return nullptr;
+		}
 
 		std::shared_ptr<T> ptr = std::move(deque.back());
 		deque.pop_back();
+
 		return ptr;
 	}
 
 	bool empty() const
 	{
 		std::lock_guard<std::mutex> lock(mutex);
+
 		return deque.empty();
 	}	
 };
@@ -179,23 +225,26 @@ class thread_joiner final
 {
 private:
 	std::vector<std::thread> &threads;
+
 public:
 	explicit thread_joiner(std::vector<std::thread> &t): threads(t)
 	{}
 	~thread_joiner()
 	{
 		for (auto &i: threads)
+		{
 			if (i.joinable())
+			{
 				i.join();
+			}
+		}
 	}
 };
 
 class thread_pool final
 {
-private:
 	class moveable_task final
 	{
-	private:
 		struct base_impl
 		{
 			virtual ~base_impl(){}
@@ -208,39 +257,54 @@ private:
 		struct curr_impl: public base_impl
 		{
 			Function function;
-			curr_impl(Function f) : function{ std::move(f) }
+
+			curr_impl(Function f) :
+				function{ std::move(f) }
 			{}
+
 			void call() override
 			{
 				function();
 			}
 		};
+
 	public:
 		moveable_task() = default;
+
 		template <typename Function>
-		moveable_task(Function function) : implementation{ new curr_impl<Function>(std::move(function)) }
+		moveable_task(Function function) :
+			implementation{ new curr_impl<Function>(std::move(function)) }
 		{}
+
 		moveable_task(const moveable_task &) = delete;
 		moveable_task &operator=(const moveable_task &) = delete;
-		moveable_task(moveable_task &&other) : implementation{ std::move(other.implementation) }
+
+		moveable_task(moveable_task &&other) noexcept :
+			implementation{ std::move(other.implementation) }
 		{}
-		moveable_task &operator=(moveable_task &&other)
+		moveable_task &operator=(moveable_task &&other) noexcept
 		{
 			if (&other != this)
+			{
 				implementation = std::move(other.implementation);
+			}
+
 			return *this;
 		}
 
 		void operator()()
 		{
 			if (implementation)
+			{
 				implementation->call();
+			}
 		}
 	};
 
 	std::atomic<bool> terminate_flag;
 	mt_safe_queue<moveable_task> common_tasks_queue;
 	std::vector<std::unique_ptr<stealing_queue<moveable_task>>> task_queues;
+
 	static thread_local stealing_queue<moveable_task> *local_tasks_queue;
 	static thread_local size_t thread_index;
 
@@ -254,7 +318,9 @@ private:
 			size_t index = (thread_index + i + 1) % task_queues.size();
 
 			if (task_queues[index]->try_steal(dest))
+			{
 				return true;
+			}
 		}
 
 		return false;
@@ -285,21 +351,30 @@ private:
 				}
 			}
 			else
+			{
 				std::this_thread::yield();
+			}
 		}
 	}
 
 public:
-	thread_pool() : terminate_flag{ false },  task_queues(std::thread::hardware_concurrency()),
-			threads(std::thread::hardware_concurrency()), joiner_of_pool_threads{ threads }
+	thread_pool() :
+		terminate_flag{ false },
+		task_queues(std::thread::hardware_concurrency()),
+		threads(std::thread::hardware_concurrency()),
+		joiner_of_pool_threads{ threads }
 	{
 		try
 		{
 			for (auto &i: task_queues)
+			{
 				i.reset(new stealing_queue<moveable_task>);
+			}
 
 			for (size_t i = 0; i != threads.size(); ++i)
+			{
 				threads[i] = std::thread(&thread_pool::working_loop, this, i);
+			}
 		}
 		catch (...)
 		{
@@ -318,9 +393,13 @@ public:
 		moveable_task task{ std::bind(function, std::move(argument)) };
 
 		if (local_tasks_queue)
+		{
 			local_tasks_queue->push(std::move(task));
+		}
 		else
+		{
 			common_tasks_queue.push(std::move(task));
+		}
 	}
 };
 
@@ -330,4 +409,4 @@ void initialize_thread_pool();
 
 void terminate_thread_pool();
 
-#endif
+#endif		// MULTITHREADING_H

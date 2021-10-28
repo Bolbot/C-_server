@@ -26,8 +26,11 @@ void parse_program_options(int argc, char **argv) noexcept
 			std::cerr << options << "\n";
 			exit(EXIT_SUCCESS);
 		}
+
 		if (server_ip.empty() || server_port.empty() || server_directory.empty())
+		{
 			throw std::runtime_error("Failed to parce given comand line arguemnts");
+		}
 	}
 	catch (std::exception &e)
 	{
@@ -273,7 +276,10 @@ int get_fd_of_requested_file(const char *address)
 {
 	std::string full_address = server_directory;
 	if (address[0] == '/')
+	{
 		server_directory.pop_back();
+	}
+
 	full_address += address;
 
 	return open(full_address.data(), O_RDONLY);
@@ -297,7 +303,13 @@ std::string time_t_to_string(time_t seconds_since_epoch)
 	}
 
 	const char *day_of_week[7] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
-	const char *month[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+	const char *month[12] =
+	{
+		"Jan", "Feb",
+		"Mar", "Apr", "May",
+		"Jun", "Jul", "Aug",
+		"Sep", "Oct", "Nov", "Dec"
+	};
 
 	constexpr size_t date_max_length = 512;
 	char date_string[date_max_length];

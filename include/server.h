@@ -1,5 +1,5 @@
-#ifndef __SERVER_H__
-#define __SERVER_H__
+#ifndef SERVER_H
+#define SERVER_H
 
 #include <atomic>
 #include <thread>
@@ -27,10 +27,9 @@ class active_connection final
 {
 	class implementation final
 	{
-	private:
-		int fd;
 	public:
-		explicit implementation(int master_socket) noexcept : fd{ accept(master_socket, nullptr, nullptr) }
+		explicit implementation(int master_socket) noexcept :
+			fd{ accept(master_socket, nullptr, nullptr) }
 		{
 			if (fd == -1)
 			{
@@ -62,14 +61,21 @@ class active_connection final
 		{
 			return fd;
 		}
-	};
-private:
-	std::shared_ptr<implementation> fd;
-public:
-	explicit active_connection(int master_socket) : fd{ new implementation(master_socket) }
-	{}
 
-	active_connection(const active_connection &other) : fd{ other.fd }
+	private:
+		int fd;
+	};
+
+	std::shared_ptr<implementation> fd;
+
+public:
+	explicit active_connection(int master_socket) :
+		fd{ new implementation(master_socket) }
+	{}
+	~active_connection() = default;
+
+	active_connection(const active_connection &other) :
+		fd{ other.fd }
 	{}
 	active_connection &operator=(const active_connection &other)
 	{
@@ -77,20 +83,22 @@ public:
 		{
 			fd = other.fd;
 		}
+
 		return *this;
 	}
 
-	active_connection(active_connection &&other) noexcept : fd{ std::move(other.fd) }
+	active_connection(active_connection &&other) noexcept :
+		fd{ std::move(other.fd) }
 	{}
 	active_connection &operator=(active_connection &&other) noexcept
 	{
 		if (&other != this)
+		{
 			fd = std::move(other.fd);
+		}
+
 		return *this;
 	}
-
-	~active_connection()
-	{}
 
 	explicit operator bool() const noexcept
 	{
@@ -107,7 +115,6 @@ void process_the_accepted_connection(active_connection client_fd);
 
 class http_request final
 {
-private:
 	std::string source;
 	std::string address;
 	short status = 520;
@@ -134,43 +141,61 @@ private:
 		if (delimiter == '\r')
 		{
 			if (stream.peek() == '\n')
+			{
 				stream.get();
+			}
 		}
 		return result;
 	}
+
 	void set_delimiter() noexcept
 	{
 		if (source.find('\r') != std::string::npos)
+		{
 			delimiter = '\r';
+		}
 		else
+		{
 			delimiter = '\n';
+		}
 	}
+
 	bool is_invalid_request() noexcept
 	{
 		if (source.find('\n') == std::string::npos && source.find('\r') == std::string::npos)
 		{
 			if (source.size())
+			{
 				status = 414;
+			}
 			else
+			{
 				status = 400;
+			}
+
 			return true;
 		}
+
 		return false;
 	}
+
 	void set_address_from_first_line(std::string first_line)
 	{
 		std::stringstream temp;
 		temp.str(first_line);
 		temp >> address;
-		temp >> address;
+		temp >> address;					// is this a deliberate repetition?
+
 		auto question_mark_pos = address.find("?");
 		if (question_mark_pos != std::string::npos)
 		{
 			address.erase(question_mark_pos);
 		}
 	}
+
 public:
-	explicit http_request(const char *s) : source{ s }
+	explicit http_request(const char *s) :
+		source{ s }
 	{
 		set_delimiter();
 	}
@@ -230,7 +255,9 @@ public:
 		set_address_from_first_line(first_line);
 
 		if (http09)
+		{
 			return;
+		}
 
 		std::string current;
 		while (!(current = readline(stream)).empty())
@@ -241,18 +268,22 @@ public:
 			}
 		}
 	}
+
 	explicit operator bool() const noexcept
 	{
 		return (status == 200);
 	}
+
 	short get_status() const noexcept
 	{
 		return status;
 	}
+
 	std::string get_address() const noexcept
 	{
 		return address;
 	}
+
 	bool status_required() const noexcept
 	{
 		return !http09;
@@ -271,4 +302,4 @@ void send_client_a_file(active_connection &client, open_file &file) noexcept;
 
 time_t time_t_now() noexcept;
 
-#endif
+#endif		// SERVER_H

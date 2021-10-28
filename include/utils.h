@@ -1,5 +1,5 @@
-#ifndef __UTILS_H__
-#define __UTILS_H__
+#ifndef UTILS_H
+#define UTILS_H
 
 #include <cstring>
 #include <cstdlib>
@@ -40,7 +40,7 @@ class log_redirector final
 {
 private:
 	static constexpr char log_file_out_name[] = "the_server_out.log";
- 	static constexpr char log_file_err_name[] = "the_server_err.log";
+	static constexpr char log_file_err_name[] = "the_server_err.log";
 	static constexpr char log_file_log_name[] = "the_server_log.log";
 
 	class redirected_stream final
@@ -50,12 +50,16 @@ private:
 		std::streambuf *old_buffer;
 		std::ofstream own_ofstream;
 	public:
-		redirected_stream(std::ostream &where_from, const char *dest_file)
-			: log_stream{ &where_from }, old_buffer{ log_stream->rdbuf() }
+		redirected_stream(std::ostream &where_from, const char *dest_file) :
+			log_stream{ &where_from },
+			old_buffer{ log_stream->rdbuf() }
 		{
 			own_ofstream.open(dest_file);
+
 			if (!own_ofstream.is_open())
+			{
 				throw std::runtime_error("Failed to open file for logging");
+			}
 
 			log_stream->rdbuf(own_ofstream.rdbuf());
 		}
@@ -75,16 +79,17 @@ protected:
 		redirected_cout{ new redirected_stream(std::cout, log_file_out_name) },
 		redirected_cerr{ new redirected_stream(std::cerr, log_file_err_name) },
 		redirected_clog{ new redirected_stream(std::clog, log_file_log_name) }
-	{
-	}
+	{}
 public:
 	static log_redirector &instance()
 	{
 		static log_redirector object;
 		return object;
 	}
+
 	log_redirector(const log_redirector &) = delete;
 	log_redirector &operator=(const log_redirector &) = delete;
+
 	~log_redirector()
 	{
 		delete redirected_cout;
@@ -99,6 +104,7 @@ void set_signal(int signal_number) noexcept;
 
 void set_signals() noexcept;
 
+// worth refactoring - much too unclear
 void log_errno(const char *function, const char *file, size_t line, const char *message, int actual_errno = errno) noexcept;
 
 size_t set_maximal_avaliable_limit_of_fd() noexcept;
@@ -113,16 +119,13 @@ class open_file final
 {
 /*
 *	Abstraction of an open file. Stores file address. RAII file descriptor. Gets some properties in nested class.
-*	Problem is the exceptrion propagation and error handling.
+*	Currently two features are uncertain: the exception propagation and the error handling.
 */
-
-private:
 	std::string address;
 	int fd;
 
 	class file_properties
 	{
-	private:
 		size_t size;
 		std::string mime_type;
 		std::string last_modified;
@@ -134,6 +137,7 @@ private:
 			{
 				std::lock_guard<std::mutex> lock(cerr_mutex);
 				LOG_CERROR("error of stat, file_properties will remain empty values");
+
 				return;
 			}
 
@@ -142,6 +146,7 @@ private:
 			std::string command = "file ";
 			command += path;
 			command += " --brief --mime";
+
 			mime_type = popen_reader(command.data());
 			if (mime_type.back() == '\n')
 			{
@@ -156,10 +161,12 @@ private:
 		{
 			return size;
 		}
+
 		std::string get_mime_type() const
 		{
 			return mime_type;
 		}
+
 		std::string get_last_modified() const
 		{
 			return last_modified;
@@ -167,6 +174,7 @@ private:
 	};
 
 	std::unique_ptr<file_properties> properties{ nullptr };
+
 	bool get_file_properties() noexcept
 	{
 		try
@@ -178,18 +186,23 @@ private:
 			std::lock_guard<std::mutex> lock(cerr_mutex);
 			std::cerr << "Failed to get properties of the file "
 				<< address << ": " << e.what() << "\n";
+
 			return false;
 		}
 		catch (...)
 		{
 			std::lock_guard<std::mutex> lock(cerr_mutex);
 			std::cerr << "Unknown error while getting properties of file " << address << "\n";
+
 			return false;
 		}
+
 		return true;
 	}
 public:
-	open_file(const char *path) : address{ path }, fd{ open(path, O_RDONLY) }
+	open_file(const char *path) :
+		address{ path },
+		fd{ open(path, O_RDONLY) }
 	{}
 
 	open_file(const open_file &) = delete;
@@ -233,6 +246,7 @@ public:
 				return 0;
 			}
 		}
+
 		return properties->get_size();
 	}
 
@@ -250,6 +264,7 @@ public:
 				return "";
 			}
 		}
+
 		return properties->get_mime_type();
 	}
 
@@ -267,6 +282,7 @@ public:
 				return "";
 			}
 		}
+
 		return properties->get_last_modified();
 	}
 
@@ -282,6 +298,6 @@ std::string time_t_to_string(time_t seconds_since_epoch);
 
 void atexit_terminator() noexcept;
 
-[[noreturn]] void terminate_handler() noexcept;
+[[ noreturn ]] void terminate_handler() noexcept;
 
-#endif
+#endif		// UTILS_H

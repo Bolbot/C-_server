@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 
 	parse_program_options(argc, argv);
 
-//	daemonize();
+	daemonize();
 
 	int master_socket = get_listening_socket();
 
